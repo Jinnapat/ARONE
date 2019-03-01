@@ -157,7 +157,8 @@
 			multiMarkerLearning.enabled = false
 			localStorage.setItem('ARjsMultiMarkerFile', multiMarkerLearning.toJSON())
 			clearInterval(stillOn)
-			C2('learnt')
+			console.log(parent)
+			//parent.C2('learnt')
 		}else{
 			domElement.style.color = 'red'
 			domElement.innerHTML = 'in progress'
