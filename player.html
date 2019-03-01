@@ -1,0 +1,80 @@
+<script src="aframe.min.js"></script>
+<script src="aframe-ar.min.js"></script>
+<script src="gltfloader.js"></script>
+<script>
+AFRAME.registerComponent('cursor-listener', {
+  init: function () {
+    this.el.addEventListener('click', function (evt) {
+		let x = Math.floor(this.object3D.position.x / 2)
+		let y = Math.floor(this.object3D.position.z / 2)
+		if (city.data[x][y][5] == '0') {
+			place(selected, x, y)
+			city.data[x][y][5] = selected
+			player.data[5][0][0] = JSON.stringify(city)
+			player.data[6][0][0] = (parseInt(player.data[6][0][0]) + 1).toString()
+			player.data[7][0][0] = '#village'
+			for (let a = 0; a < 4; player.data[a][0][0] = (parseInt(player.data[a][0][0]) + parseInt(city.data[x][y][a])).toString(), a++)
+			year.setAttribute('value', 'Year ' + player.data[6][0][0].toString())
+			parent.C2(JSON.stringify(player))
+		}
+	});
+	this.el.addEventListener('mouseenter', function (evt) {
+		let x = Math.floor(this.object3D.position.x / 2)
+		let y = Math.floor(this.object3D.position.z / 2)
+		text.setAttribute('value', 'Wealth +' + city.data[x][y][0] + '\nCulture +' + city.data[x][y][1] + '\nPopulation +' + city.data[x][y][2] + '\nDefense +' + city.data[x][y][3] + '\nHold to place\n' + selected + ' here')
+	});
+	this.el.addEventListener('mouseleave', function (evt) {
+		text.setAttribute('value', '')
+	});
+  }
+});
+</script>
+<body>
+<a-scene antialias="true" embedded arjs="debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3" vr-mode-ui="enabled: false">
+	<a-assets>
+		<a-asset-item id="land" src="Land Platform.glb">
+		<a-asset-item id="water" src="Water Platform.glb">
+		<a-asset-item id="mountain" src="Mountain Platform.glb">
+		<a-asset-item id="village" src="village.glb">
+	</a-assets>
+	<a-anchor preset="area">
+		<a-light type="hemisphere" color="#8CCDFF" groundColor="#8CCDFF" intensity="3" position="0 5 0"></a-light>
+		<a-text value="" position="-1 1 3" rotation="0 90 0" id="time"></a-text>
+	</a-anchor>
+	<a-camera-static>
+		<a-cursor fuse="true"></a-cursor>
+		<a-text value="" position="0.1 0 -1" scale="0.1 0.1 0.1" id="detail"></a-text>
+	</a-camera-static>
+</a-scene>
+<script>
+var anchor = document.querySelector('a-anchor');
+var text = document.querySelector('#detail');
+var year = document.querySelector('#time');
+var player = JSON.parse(new URL(window.location.href).searchParams.get('data'))
+var city = JSON.parse(player.data[5])
+var found = JSON.parse(player.data[4]).data
+var selected = player.data[7][0][0];
+
+function place (name, x, y, z = 0) {
+	var tile = document.createElement('a-gltf-model');
+	tile.setAttribute('src', name);
+	tile.setAttribute('position', (x * 2).toString() + ' ' + z.toString() + ' ' + (y * 2).toString());
+	anchor.appendChild(tile);
+	return tile
+}
+
+for (let x = 0; x < city.data.length; x++) {
+	for(let y = 0; y < city.data[0].length; y++) {
+		if (city.data[x][y][4] == '#land') { 
+			place('#land', x, y).setAttribute('cursor-listener', '');
+		} else {
+			place(city.data[x][y][4], x, y)
+		}
+		if (city.data[x][y][5].toString() != '0') { 
+			place(city.data[x][y][5], x, y);
+		}
+	}
+}
+year.setAttribute('value', 'Year ' + player.data[6][0][0].toString())
+</script>
+</body>

@@ -1,0 +1,67 @@
+<script src="aframe.min.js"></script>
+<script src="aframe-ar.min.js"</script>
+<script src="gltfloader.js"></script>
+<script>
+AFRAME.registerComponent('cursor-listener', {
+  init: function () {
+    this.el.addEventListener('click', function (evt) {
+		[].forEach.call(object, function(i) {
+			if (i.name == 'part' + o.toString()) {
+				i.visible = true;
+			}
+			if (i.name == 'part' + (o+1).toString()) {
+				ball.object3D.position.set(i.position.x, i.position.y + 0.3, i.position.z);
+			}
+		});
+		o++;
+		if (o >= object.length) {
+			ball.object3D.visible = false;
+			parent.C2("builded");
+			document.querySelector("a-text").setAttribute('visible', true)
+		}
+    });
+  }
+});
+</script>
+<body>
+<a-scene antialias="true" embedded arjs="debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3" vr-mode-ui="enabled: false">
+	<a-light type="hemisphere" color="#29648A" groundColor="#FEFFFF" intensity="4" position="0 5 0"></a-light>
+	<a-anchor preset="area">
+		<a-sphere scale="0.2 0.2 0.2" position="0 0 0" material="color: green; transparent: true; opacity: 0.5" cursor-listener></a-sphere>
+		<a-gltf-model position="0 0 0"></a-gltf-model>
+		<a-text visible="false" position="-1 1 -1"></a-text>
+	</a-anchor>
+	<a-camera-static>
+		<a-cursor fuse="true"></a-cursor>
+	</a-camera-static>
+</a-scene>
+<script>
+var o = 0;
+var ball = document.querySelector("a-sphere")
+var model = document.querySelector("a-gltf-model")
+var modelName = new URL(window.location.href).searchParams.get("model")
+document.querySelector("a-text").setAttribute('value', modelName)
+var object
+
+document.querySelector("a-gltf-model").addEventListener("model-loaded", function() {
+	let flag = true
+	object = model.object3D.children
+	while (flag) {
+		if (object.length == 1) {
+			object = object[0]
+		} else {
+			object = object.children
+			flag = false
+		}
+	}
+	[].forEach.call(object, function(i) {
+		i.visible = false;
+		if (i.name == 'part0') {
+			ball.object3D.position.set(i.position.x + 2.5, i.position.y + 2, i.position.z + 2);
+		}
+	})
+})
+
+model.setAttribute('src', modelName+'.glb')
+</script>
+</body>

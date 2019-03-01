@@ -1,0 +1,21 @@
+<script src="aframe.min.js"></script>
+<script src="gltfloader.js"></script>
+<script src="aframe-orbit-controls-component.min.js"></script>
+<body>
+<a-scene vr-mode-ui="enabled: false">
+	<a-sky color="#010101"></a-sky>
+	<a-light type="hemisphere" color="#8CCDFF" groundColor="#8CCDFF" intensity="3" position="0 5 0"></a-light>
+	<a-gltf-model id="target" position="0 0 0"></a-gltf-model>
+	<a-text position="-1 1 -1"></a-text>
+	<a-camera position="1 2 1" orbit-controls="target: #target"><>
+</a-scene>
+<script>
+param = new URL(window.location.href).searchParams
+var modelName = param.get("model")
+if (param.get("found") == "true") {
+	document.querySelector("a-gltf-model").setAttribute('src', modelName+'.glb')
+	document.querySelector("a-sky").setAttribute('color', '#18364D')
+}
+document.querySelector("a-text").setAttribute('value', modelName)
+</script>
+</body>
